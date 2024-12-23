@@ -1,8 +1,8 @@
 const db = require('../config/db');
 
-// ...existing code...
-
+// Lead model class
 class Lead {
+    // Create a new lead
     static async create(leadData) {
         const [result] = await db.execute(
             'INSERT INTO leads (restaurant_name, address, contact_number, status, assigned_kam) VALUES (?, ?, ?, ?, ?)',
@@ -11,16 +11,19 @@ class Lead {
         return result.insertId;
     }
 
+    // Get all leads
     static async getAll() {
         const [leads] = await db.query('SELECT * FROM leads ORDER BY created_at DESC');
         return leads;
     }
 
+    // Get lead by ID
     static async getById(id) {
         const [leads] = await db.execute('SELECT * FROM leads WHERE id = ?', [id]);
         return leads[0];
     }
 
+    // Update lead
     static async update(id, leadData) {
         const [result] = await db.execute(
             'UPDATE leads SET restaurant_name = ?, address = ?, contact_number = ?, status = ?, assigned_kam = ? WHERE id = ?',
@@ -29,6 +32,7 @@ class Lead {
         return result;
     }
 
+    // Search leads
     static async search(query) {
         const [leads] = await db.execute(
             'SELECT * FROM leads WHERE restaurant_name LIKE ? OR address LIKE ? OR contact_number LIKE ?',
@@ -37,6 +41,7 @@ class Lead {
         return leads;
     }
 
+    // Get dashboard summary
     static async getDashboardSummary() {
         const [result] = await db.query(`
             SELECT 

@@ -52,9 +52,13 @@ router.get('/:id', async (req, res) => {
 // Update lead
 router.put('/:id', async (req, res) => {
   try {
+    leadSchema.parse(req.body);
     await Lead.update(req.params.id, req.body);
     res.json({ message: 'Lead updated successfully' });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: error.errors });
+    }
     res.status(500).json({ error: error.message });
   }
 });

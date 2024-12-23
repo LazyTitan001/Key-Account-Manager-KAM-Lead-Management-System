@@ -1,8 +1,8 @@
 const db = require('../config/db');
 
-// ...existing code...
-
+// Interaction model class
 class Interaction {
+    // Create a new interaction
     static async create(interactionData) {
         const [result] = await db.execute(
             'INSERT INTO interactions (lead_id, interaction_date, interaction_type, notes, follow_up_required) VALUES (?, ?, ?, ?, ?)',
@@ -11,11 +11,13 @@ class Interaction {
         return result.insertId;
     }
 
+    // Get interactions by lead ID
     static async getByLeadId(leadId) {
         const [interactions] = await db.execute('SELECT * FROM interactions WHERE lead_id = ? ORDER BY interaction_date DESC', [leadId]);
         return interactions;
     }
 
+    // Get today's pending calls
     static async getTodaysPendingCalls() {
         const [interactions] = await db.execute(
             'SELECT i.*, l.restaurant_name FROM interactions i JOIN leads l ON i.lead_id = l.id WHERE i.interaction_date = CURDATE() AND i.follow_up_required = true'
