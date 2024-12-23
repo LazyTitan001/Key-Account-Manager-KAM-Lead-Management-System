@@ -20,7 +20,7 @@ class Dashboard {
         return {
             ...summary[0],
             recent_interactions: recentInteractions,
-            pending_calls: pendingCalls
+            pending_calls: pendingCalls 
         };
     }
 }

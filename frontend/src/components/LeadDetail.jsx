@@ -13,7 +13,8 @@ function LeadDetail() {
     interaction_date: '',
     interaction_type: '',
     notes: '',
-    follow_up_required: false
+    follow_up_required: false,
+    next_interaction_date: '' 
   });
   const [newContact, setNewContact] = useState({
     name: '',
@@ -51,6 +52,7 @@ function LeadDetail() {
   const handleAddInteraction = async (e) => {
     e.preventDefault();
     try {
+      const formattedDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
       await fetch('http://localhost:3000/api/interactions', {
         method: 'POST',
         headers: {
@@ -58,7 +60,9 @@ function LeadDetail() {
         },
         body: JSON.stringify({
           ...newInteraction,
-          lead_id: Number(id) // Ensure lead_id is a number
+          lead_id: Number(id),
+          interaction_date: formattedDate, 
+          next_interaction_date: newInteraction.follow_up_required ? new Date(newInteraction.next_interaction_date).toISOString().split('T')[0] : null 
         }),
       });
       fetchLeadData();
@@ -66,7 +70,8 @@ function LeadDetail() {
         interaction_date: '',
         interaction_type: '',
         notes: '',
-        follow_up_required: false
+        follow_up_required: false,
+        next_interaction_date: '' 
       });
       setShowInteractionForm(false);
     } catch (error) {
@@ -84,7 +89,7 @@ function LeadDetail() {
         },
         body: JSON.stringify({
           ...newContact,
-          lead_id: Number(id) // Ensure lead_id is a number
+          lead_id: Number(id) 
         }),
       });
       fetchLeadData();
@@ -187,6 +192,11 @@ function LeadDetail() {
               <p className="text-gray-600"><strong>Type:</strong> {interaction.interaction_type}</p>
               <p className="text-gray-600"><strong>Notes:</strong> {interaction.notes}</p>
               <p className="text-gray-600"><strong>Follow-up Required:</strong> {interaction.follow_up_required ? 'Yes' : 'No'}</p>
+              {interaction.follow_up_required ? (
+                <p className="text-gray-600"><strong>Follow-up Date:</strong> {new Date(interaction.next_interaction_date).toLocaleDateString()}</p>
+              ) : (
+                <p className="text-gray-600"><strong>Follow-up Date:</strong> No follow-up needed</p>
+              )}
             </div>
           ))}
         </div>
@@ -198,13 +208,6 @@ function LeadDetail() {
             <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
               <form onSubmit={handleAddInteraction}>
                 <h3 className="text-lg font-bold text-gray-800 mb-4">Add New Interaction</h3>
-                <input
-                  type="date"
-                  value={newInteraction.interaction_date}
-                  onChange={(e) => setNewInteraction({...newInteraction, interaction_date: e.target.value})}
-                  required
-                  className="border p-2 w-full mb-2"
-                />
                 <select
                   value={newInteraction.interaction_type}
                   onChange={(e) => setNewInteraction({...newInteraction, interaction_type: e.target.value})}
@@ -232,6 +235,15 @@ function LeadDetail() {
                   />
                   Follow-up Required
                 </label>
+                {newInteraction.follow_up_required && (
+                  <input
+                    type="date"
+                    value={newInteraction.next_interaction_date}
+                    onChange={(e) => setNewInteraction({...newInteraction, next_interaction_date: e.target.value})}
+                    required
+                    className="border p-2 w-full mb-2"
+                  />
+                )}
                 <div className="flex justify-end space-x-4">
                   <button type="button" onClick={() => setShowInteractionForm(false)} className="bg-gray-500 text-white px-4 py-2 rounded">
                     Cancel

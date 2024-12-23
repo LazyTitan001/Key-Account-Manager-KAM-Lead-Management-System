@@ -35,6 +35,20 @@ function Dashboard() {
     }
   };
 
+  const handleMarkAsDone = async (id) => {
+    try {
+      await fetch(`http://localhost:3000/api/interactions/mark-done/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      fetchPendingCalls(); // Refresh the pending calls list
+    } catch (error) {
+      console.error('Error marking interaction as done:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Dashboard</h1>
@@ -62,6 +76,17 @@ function Dashboard() {
               <h4 className="text-lg font-bold text-gray-800">{call.restaurant_name}</h4>
               <p className="text-gray-600">Date: {new Date(call.interaction_date).toLocaleDateString()}</p>
               <p className="text-gray-600">{call.notes}</p>
+              {call.follow_up_required ? (
+                <p className="text-gray-600"><strong>Follow-up Date:</strong> {new Date(call.next_interaction_date).toLocaleDateString()}</p>
+              ) : (
+                <p className="text-gray-600"><strong>Follow-up Date:</strong> No follow-up needed</p>
+              )}
+              <button
+                onClick={() => handleMarkAsDone(call.id)}
+                className="bg-green-600 text-white px-4 py-2 rounded mt-4"
+              >
+                Mark as Done
+              </button>
             </div>
           ))}
         </div>
@@ -74,6 +99,7 @@ function Dashboard() {
             <div key={interaction.id} className="bg-white p-4 rounded shadow">
               <p className="text-gray-600">Type: {interaction.interaction_type}</p>
               <p className="text-gray-600">Date: {new Date(interaction.interaction_date).toLocaleDateString()}</p>
+              <p className="text-gray-600">Time: {new Date(interaction.interaction_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p> {/* Show interaction time */}
               <p className="text-gray-600">{interaction.notes}</p>
             </div>
           ))}
