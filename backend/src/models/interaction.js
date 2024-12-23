@@ -24,6 +24,14 @@ class Interaction {
         );
         return interactions;
     }
+
+    // Get recent interactions
+    static async getRecent() {
+        const [interactions] = await db.execute(
+            'SELECT * FROM interactions ORDER BY interaction_date DESC LIMIT 10'
+        );
+        return interactions;
+    }
 }
 
 module.exports = Interaction;

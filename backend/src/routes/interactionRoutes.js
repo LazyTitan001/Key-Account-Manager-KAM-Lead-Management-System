@@ -46,4 +46,14 @@ router.get('/pending-calls', async (req, res) => {
   }
 });
 
+// Get recent interactions
+router.get('/recent', async (req, res) => {
+  try {
+    const recentInteractions = await Interaction.getRecent();
+    res.json(recentInteractions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;

@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const Interaction = require('./interaction');
 
 // Lead model class
 class Lead {
@@ -41,17 +42,6 @@ class Lead {
         return leads;
     }
 
-    // Get dashboard summary
-    static async getDashboardSummary() {
-        const [result] = await db.query(`
-            SELECT 
-                COUNT(CASE WHEN status = 'New' THEN 1 END) as new_leads,
-                COUNT(CASE WHEN status = 'Active' THEN 1 END) as active_leads,
-                COUNT(CASE WHEN status = 'Inactive' THEN 1 END) as inactive_leads
-            FROM leads
-        `);
-        return result[0];
-    }
 }
 
 module.exports = Lead;
