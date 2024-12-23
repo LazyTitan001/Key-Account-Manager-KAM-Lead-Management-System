@@ -28,7 +28,7 @@ class Interaction {
     // Get recent interactions
     static async getRecent() {
         const [interactions] = await db.execute(
-            'SELECT * FROM interactions ORDER BY interaction_date DESC LIMIT 10'
+            'SELECT i.*, l.restaurant_name FROM interactions i JOIN leads l ON i.lead_id = l.id ORDER BY i.interaction_date DESC LIMIT 10'
         );
         return interactions;
     }

@@ -15,10 +15,12 @@ class Dashboard {
         `);
 
         const recentInteractions = await Interaction.getRecent();
+        const pendingCalls = await Interaction.getTodaysPendingCalls();
 
         return {
             ...summary[0],
-            recent_interactions: recentInteractions
+            recent_interactions: recentInteractions,
+            pending_calls: pendingCalls
         };
     }
 }
