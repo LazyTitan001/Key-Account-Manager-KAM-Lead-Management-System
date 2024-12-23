@@ -1,5 +1,7 @@
 const db = require('../config/db');
 
+// ...existing code...
+
 class Interaction {
     static async create(interactionData) {
         const [result] = await db.execute(

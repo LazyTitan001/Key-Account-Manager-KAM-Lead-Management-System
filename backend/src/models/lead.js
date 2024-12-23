@@ -1,5 +1,7 @@
 const db = require('../config/db');
 
+// ...existing code...
+
 class Lead {
     static async create(leadData) {
         const [result] = await db.execute(
