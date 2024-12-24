@@ -1,5 +1,6 @@
 // src/components/Dashboard.jsx
 import { useState, useEffect } from 'react';
+import axiosInstance from '../api/axiosInstance';
 
 function Dashboard() {
   const [summary, setSummary] = useState({
@@ -17,9 +18,8 @@ function Dashboard() {
 
   const fetchSummary = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/dashboard/summary');
-      const data = await response.json();
-      setSummary(data);
+      const response = await axiosInstance.get('/api/dashboard/summary');
+      setSummary(response.data);
     } catch (error) {
       console.error('Error fetching summary:', error);
     }
@@ -27,9 +27,8 @@ function Dashboard() {
 
   const fetchPendingCalls = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/interactions/pending-calls');
-      const data = await response.json();
-      setPendingCalls(data);
+      const response = await axiosInstance.get('/api/interactions/pending-calls');
+      setPendingCalls(response.data);
     } catch (error) {
       console.error('Error fetching pending calls:', error);
     }
@@ -37,12 +36,7 @@ function Dashboard() {
 
   const handleMarkAsDone = async (id) => {
     try {
-      await fetch(`http://localhost:3000/api/interactions/mark-done/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      await axiosInstance.put(`/api/interactions/mark-done/${id}`);
       fetchPendingCalls(); // Refresh the pending calls list
     } catch (error) {
       console.error('Error marking interaction as done:', error);

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Tab } from '@headlessui/react';
+import axiosInstance from '../api/axiosInstance';
 
 function LeadDetail() {
   const { id } = useParams();
@@ -35,20 +36,14 @@ function LeadDetail() {
   const fetchLeadData = async () => {
     try {
       const [leadRes, contactsRes, interactionsRes] = await Promise.all([
-        fetch(`http://localhost:3000/api/leads/${id}`),
-        fetch(`http://localhost:3000/api/contacts/lead/${id}`),
-        fetch(`http://localhost:3000/api/interactions/lead/${id}`)
+        axiosInstance.get(`/api/leads/${id}`),
+        axiosInstance.get(`/api/contacts/lead/${id}`),
+        axiosInstance.get(`/api/interactions/lead/${id}`)
       ]);
 
-      const [leadData, contactsData, interactionsData] = await Promise.all([
-        leadRes.json(),
-        contactsRes.json(),
-        interactionsRes.json()
-      ]);
-
-      setLead(leadData);
-      setContacts(contactsData);
-      setInteractions(interactionsData);
+      setLead(leadRes.data);
+      setContacts(contactsRes.data);
+      setInteractions(interactionsRes.data);
     } catch (error) {
       console.error('Error fetching lead data:', error);
     }
@@ -58,17 +53,11 @@ function LeadDetail() {
     e.preventDefault();
     try {
       const formattedDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      await fetch('http://localhost:3000/api/interactions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...newInteraction,
-          lead_id: Number(id),
-          interaction_date: formattedDate, 
-          next_interaction_date: newInteraction.follow_up_required ? new Date(newInteraction.next_interaction_date).toISOString().split('T')[0] : null 
-        }),
+      await axiosInstance.post('/api/interactions', {
+        ...newInteraction,
+        lead_id: Number(id),
+        interaction_date: formattedDate, 
+        next_interaction_date: newInteraction.follow_up_required ? new Date(newInteraction.next_interaction_date).toISOString().split('T')[0] : null 
       });
       fetchLeadData();
       setNewInteraction({
@@ -87,15 +76,9 @@ function LeadDetail() {
   const handleAddContact = async (e) => {
     e.preventDefault();
     try {
-      await fetch('http://localhost:3000/api/contacts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...newContact,
-          lead_id: Number(id) 
-        }),
+      await axiosInstance.post('/api/contacts', {
+        ...newContact,
+        lead_id: Number(id) 
       });
       fetchLeadData();
       setNewContact({
@@ -113,13 +96,7 @@ function LeadDetail() {
   const handleUpdateContact = async (e) => {
     e.preventDefault();
     try {
-      await fetch(`http://localhost:3000/api/contacts/${contactToUpdate.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(contactToUpdate),
-      });
+      await axiosInstance.put(`/api/contacts/${contactToUpdate.id}`, contactToUpdate);
       fetchLeadData();
       setContactToUpdate(null);
       setShowUpdateContactForm(false);
@@ -131,13 +108,7 @@ function LeadDetail() {
   const handleUpdateLead = async (e) => {
     e.preventDefault();
     try {
-      await fetch(`http://localhost:3000/api/leads/${leadToUpdate.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(leadToUpdate),
-      });
+      await axiosInstance.put(`/api/leads/${leadToUpdate.id}`, leadToUpdate);
       fetchLeadData();
       setLeadToUpdate(null);
       setShowUpdateLeadForm(false);

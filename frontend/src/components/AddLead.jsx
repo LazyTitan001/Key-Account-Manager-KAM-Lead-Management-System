@@ -1,6 +1,7 @@
 // src/components/AddLead.jsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../api/axiosInstance';
 
 function AddLead() {
   const navigate = useNavigate();
@@ -15,16 +16,9 @@ function AddLead() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/api/leads', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(leadData),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
+      const response = await axiosInstance.post('/api/leads', leadData);
+      if (response.status === 200) {
+        const data = response.data;
         navigate(`/leads/${data.id}`);
       }
     } catch (error) {

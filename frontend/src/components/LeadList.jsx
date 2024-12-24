@@ -1,7 +1,8 @@
 // src/components/LeadList.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'; 
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import axiosInstance from '../api/axiosInstance';
 
 function LeadList() {
   const [leads, setLeads] = useState([]);
@@ -13,9 +14,8 @@ function LeadList() {
 
   const fetchLeads = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/leads');
-      const data = await response.json();
-      setLeads(data);
+      const response = await axiosInstance.get('/api/leads');
+      setLeads(response.data);
     } catch (error) {
       console.error('Error fetching leads:', error);
     }
@@ -28,9 +28,8 @@ function LeadList() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/leads/search/${searchQuery}`);
-      const data = await response.json();
-      setLeads(data);
+      const response = await axiosInstance.get(`/api/leads/search/${searchQuery}`);
+      setLeads(response.data);
     } catch (error) {
       console.error('Error searching leads:', error);
     }
