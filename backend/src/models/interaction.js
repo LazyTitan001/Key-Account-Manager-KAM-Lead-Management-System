@@ -1,5 +1,6 @@
 const db = require('../config/db');
 
+// Function to format date and time
 const formatDateTime = (date) => {
   const d = new Date(date);
   const pad = (n) => (n < 10 ? '0' + n : n);

@@ -2,8 +2,10 @@ const db = require('../config/db');
 const Interaction = require('./interaction');
 
 class Dashboard {
+    // Method to get the summary of leads and interactions
     static async getSummary() {
         try {
+            // Query to get the count and names of leads based on their status
             const [summary] = await db.query(`
                 SELECT 
                     COUNT(CASE WHEN status = 'New' THEN 1 END) as new_leads,
@@ -15,9 +17,12 @@ class Dashboard {
                 FROM leads
             `);
 
+            // Get recent interactions
             const recentInteractions = await Interaction.getRecent();
+            // Get today's pending calls
             const pendingCalls = await Interaction.getTodaysPendingCalls();
 
+            // Return the summary along with recent interactions and pending calls
             return {
                 ...summary[0],
                 recent_interactions: recentInteractions,

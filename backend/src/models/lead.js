@@ -33,7 +33,7 @@ class Lead {
         return result;
     }
 
-    // Search leads
+    // Search leads by query
     static async search(query) {
         const [leads] = await db.execute(
             'SELECT * FROM leads WHERE restaurant_name LIKE ? OR address LIKE ? OR contact_number LIKE ?',
@@ -41,7 +41,6 @@ class Lead {
         );
         return leads;
     }
-
 }
 
 module.exports = Lead;

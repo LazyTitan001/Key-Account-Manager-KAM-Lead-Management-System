@@ -9,6 +9,7 @@ const scheduler = require('./scheduler');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -18,6 +19,7 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/interactions', interactionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
+// Start server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   scheduler;
