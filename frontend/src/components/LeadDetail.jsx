@@ -10,6 +10,10 @@ function LeadDetail() {
   const [interactions, setInteractions] = useState([]);
   const [showContactForm, setShowContactForm] = useState(false);
   const [showInteractionForm, setShowInteractionForm] = useState(false);
+  const [showUpdateContactForm, setShowUpdateContactForm] = useState(false);
+  const [contactToUpdate, setContactToUpdate] = useState(null);
+  const [showUpdateLeadForm, setShowUpdateLeadForm] = useState(false);
+  const [leadToUpdate, setLeadToUpdate] = useState(null);
   const [newInteraction, setNewInteraction] = useState({
     interaction_date: '',
     interaction_type: '',
@@ -106,6 +110,42 @@ function LeadDetail() {
     }
   };
 
+  const handleUpdateContact = async (e) => {
+    e.preventDefault();
+    try {
+      await fetch(`http://localhost:3000/api/contacts/${contactToUpdate.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactToUpdate),
+      });
+      fetchLeadData();
+      setContactToUpdate(null);
+      setShowUpdateContactForm(false);
+    } catch (error) {
+      console.error('Error updating contact:', error);
+    }
+  };
+
+  const handleUpdateLead = async (e) => {
+    e.preventDefault();
+    try {
+      await fetch(`http://localhost:3000/api/leads/${leadToUpdate.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(leadToUpdate),
+      });
+      fetchLeadData();
+      setLeadToUpdate(null);
+      setShowUpdateLeadForm(false);
+    } catch (error) {
+      console.error('Error updating lead:', error);
+    }
+  };
+
   const categories = ['Contacts', 'Interactions'];
 
   if (!lead) return (
@@ -123,9 +163,20 @@ function LeadDetail() {
             <h1 className="text-2xl font-bold text-gray-100 mb-2">{lead.restaurant_name}</h1>
             <p className="text-gray-400">{lead.address}</p>
           </div>
-          <span className={`status-badge ${lead.status.toLowerCase()}`}>
-            {lead.status}
-          </span>
+          <div className="flex items-center space-x-4">
+            <span className={`status-badge ${lead.status.toLowerCase()}`}>
+              {lead.status}
+            </span>
+            <button 
+              onClick={() => {
+                setLeadToUpdate(lead);
+                setShowUpdateLeadForm(true);
+              }}
+              className="secondary-button"
+            >
+              Edit
+            </button>
+          </div>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-dark-100">
           <div>
@@ -185,6 +236,15 @@ function LeadDetail() {
                       <h4 className="text-lg font-semibold text-gray-100">{contact.name}</h4>
                       <p className="text-sm text-blue-400">{contact.role}</p>
                     </div>
+                    <button 
+                      onClick={() => {
+                        setContactToUpdate(contact);
+                        setShowUpdateContactForm(true);
+                      }}
+                      className="secondary-button"
+                    >
+                      Edit
+                    </button>
                   </div>
                   <div className="mt-4 space-y-2">
                     <p className="text-sm text-gray-400 flex items-center">
@@ -371,6 +431,143 @@ function LeadDetail() {
             </form>
           </div>
         </div>
+      )}
+
+      {showUpdateContactForm && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="dark-card w-full max-w-md">
+            <form onSubmit={handleUpdateContact} className="space-y-4">
+              <h3 className="text-xl font-bold text-gray-100 mb-6">Update Contact</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm text-gray-400 block mb-1">Name</label>
+                  <input
+                    type="text"
+                    placeholder="Contact name"
+                    value={contactToUpdate.name}
+                    onChange={(e) => setContactToUpdate({...contactToUpdate, name: e.target.value})}
+                    required
+                    className="dark-input w-full"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-400 block mb-1">Role</label>
+                  <input
+                    type="text"
+                    placeholder="Contact role"
+                    value={contactToUpdate.role}
+                    onChange={(e) => setContactToUpdate({...contactToUpdate, role: e.target.value})}
+                    required
+                    className="dark-input w-full"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-400 block mb-1">Phone Number</label>
+                  <input
+                    type="tel"
+                    placeholder="Contact phone"
+                    value={contactToUpdate.phone_number}
+                    onChange={(e) => setContactToUpdate({...contactToUpdate, phone_number: e.target.value})}
+                    required
+                    className="dark-input w-full"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-gray-400 block mb-1">Email</label>
+                  <input
+                    type="email"
+                    placeholder="Contact email"
+                    value={contactToUpdate.email}
+                    onChange={(e) => setContactToUpdate({...contactToUpdate, email: e.target.value})}
+                    required
+                    className="dark-input w-full"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-4 mt-6">
+                <button type="button" onClick={() => setShowUpdateContactForm(false)} className="secondary-button">
+                  Cancel
+                </button>
+                <button type="submit" className="primary-button">Update Contact</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showUpdateLeadForm && (
+        <>
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="dark-card w-full max-w-md">
+              <form onSubmit={handleUpdateLead} className="space-y-4">
+                <h3 className="text-xl font-bold text-gray-100 mb-6">Update Lead</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Restaurant Name</label>
+                    <input
+                      type="text"
+                      placeholder="Restaurant name"
+                      value={leadToUpdate.restaurant_name}
+                      onChange={(e) => setLeadToUpdate({...leadToUpdate, restaurant_name: e.target.value})}
+                      required
+                      className="dark-input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Address</label>
+                    <input
+                      type="text"
+                      placeholder="Address"
+                      value={leadToUpdate.address}
+                      onChange={(e) => setLeadToUpdate({...leadToUpdate, address: e.target.value})}
+                      required
+                      className="dark-input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Contact Number</label>
+                    <input
+                      type="tel"
+                      placeholder="Contact number"
+                      value={leadToUpdate.contact_number}
+                      onChange={(e) => setLeadToUpdate({...leadToUpdate, contact_number: e.target.value})}
+                      required
+                      className="dark-input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Status</label>
+                    <input
+                      type="text"
+                      placeholder="Status"
+                      value={leadToUpdate.status}
+                      onChange={(e) => setLeadToUpdate({...leadToUpdate, status: e.target.value})}
+                      required
+                      className="dark-input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-400 block mb-1">Assigned KAM</label>
+                    <input
+                      type="text"
+                      placeholder="Assigned KAM"
+                      value={leadToUpdate.assigned_kam}
+                      onChange={(e) => setLeadToUpdate({...leadToUpdate, assigned_kam: e.target.value})}
+                      required
+                      className="dark-input w-full"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-4 mt-6">
+                  <button type="button" onClick={() => setShowUpdateLeadForm(false)} className="secondary-button">
+                    Cancel
+                  </button>
+                  <button type="submit" className="primary-button">Update Lead</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

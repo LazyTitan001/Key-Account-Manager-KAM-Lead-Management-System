@@ -8,7 +8,8 @@ router.get('/summary', async (req, res) => {
     const summary = await Dashboard.getSummary();
     res.json(summary);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error fetching dashboard summary:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 

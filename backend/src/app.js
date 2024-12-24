@@ -4,6 +4,7 @@ const leadRoutes = require('./routes/leadRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const interactionRoutes = require('./routes/interactionRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const scheduler = require('./scheduler'); 
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,4 +20,5 @@ app.use('/api/dashboard', dashboardRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  scheduler;
 });
