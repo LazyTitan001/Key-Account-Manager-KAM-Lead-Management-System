@@ -17,9 +17,10 @@ function AddLead() {
     e.preventDefault();
     try {
       const response = await axiosInstance.post('/api/leads', leadData);
-      if (response.status === 200) {
-        const data = response.data;
-        navigate(`/leads/${data.id}`);
+      console.log('Response status:', response.status);
+      console.log('Response data:', response.data);
+      if (response.status === 200 || response.status === 201) {
+        navigate('/leads'); // Navigate to the leads list page
       }
     } catch (error) {
       console.error('Error adding lead:', error);
